@@ -1,7 +1,5 @@
-Rails 4 + Vagrant + Chef boilerplate project
+Rails 4 + Vagrant + Chef app
 =============================================================
-
-
 
 Features
 --------------
