@@ -1,4 +1,4 @@
-Rails 4 Bootstrap Angular.js Vagrant Chef boilerplate project
+Rails 4 + Vagrant + Chef boilerplate project
 =============================================================
 
 
