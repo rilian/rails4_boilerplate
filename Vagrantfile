@@ -23,15 +23,15 @@ Vagrant::Config.run do |config|
     config.vm.customize ['modifyvm', :id, "--#{k}", v]
   end
 
-  config.vm.provision :chef_solo, run_list: %w[role[backend]] do |chef|
+  config.vm.provision :chef_solo, run_list: %w[role[develop]] do |chef|
     chef.cookbooks_path = %w[cookbooks/cookbooks cookbooks/site-cookbooks]
     chef.roles_path = 'cookbooks/roles'
     chef.data_bags_path = 'cookbooks/data_bags'
 
     # Box roles
-    chef.add_role('backend')
+    chef.add_role('develop')
 
-    # Custom options
-    chef.json.merge!({ 'rails4' => { 'reset_db' => false } })
+    chef.add_recipe 'apt'
+
   end
 end

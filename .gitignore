@@ -19,3 +19,8 @@
 # Ignore IDEs
 .idea
 .vagrant
+
+# Project files
+cookbooks/cookbooks/*
+cookbooks/tmp/*
+
