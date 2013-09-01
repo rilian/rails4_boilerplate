@@ -1,37 +1,82 @@
+# encoding: utf-8
+
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
 Vagrant::Config.run do |config|
+
   config.vm.box = 'precise32'
-
   config.vm.box_url = 'http://files.vagrantup.com/precise32.box'
-
   config.vm.boot_mode = :gui
-
-  # config.vm.network :bridged
-
-  config.vm.forward_port 80, 8080
-  # [8888, 4000, 1080, 8998, 3000].each do |port|
-  #   config.vm.forward_port port, port
-  # end
 
   {
     memory: 512,
-    cpus:   2,
+    cpus: 2,
     ioapic: 'on'
   }.each do |k, v|
     config.vm.customize ['modifyvm', :id, "--#{k}", v]
   end
 
-  config.vm.provision :chef_solo, run_list: %w[role[develop]] do |chef|
-    chef.cookbooks_path = %w[cookbooks/cookbooks cookbooks/site-cookbooks]
-    chef.roles_path = 'cookbooks/roles'
-    chef.data_bags_path = 'cookbooks/data_bags'
+  config.ssh.forward_agent = true
 
-    # Box roles
-    chef.add_role('develop')
-
-    chef.add_recipe 'apt'
-
+  config.vm.provision :chef_solo do |chef|
+    chef.cookbooks_path = ["cookbooks"]
+    chef.add_recipe :apt
+    chef.add_recipe 'git'
+    #chef.add_recipe 'vim'
+    #chef.add_recipe 'nginx'
+    #chef.add_recipe 'postgresql::server'
+    chef.add_recipe 'rvm::vagrant'
+    chef.add_recipe 'rvm::system'
+    #chef.add_recipe 'sqlite'
+    chef.json = {
+      :rvm => {
+        :default_ruby => 'ruby-2.0.0-p247'
+      },
+      :git        => {
+        :prefix => "/usr/local"
+      },
+      :nginx      => {
+        :dir                => "/etc/nginx",
+        :log_dir            => "/var/log/nginx",
+        :binary             => "/usr/sbin/nginx",
+        :user               => "www-data",
+        :init_style         => "runit",
+        :pid                => "/var/run/nginx.pid",
+        :worker_connections => "1024"
+      },
+      :postgresql => {
+        :config   => {
+          :listen_addresses => "*",
+          :port             => "5432"
+        },
+        :pg_hba   => [
+          {
+            :type   => "local",
+            :db     => "postgres",
+            :user   => "postgres",
+            :addr   => nil,
+            :method => "trust"
+          },
+          {
+            :type   => "host",
+            :db     => "all",
+            :user   => "all",
+            :addr   => "0.0.0.0/0",
+            :method => "md5"
+          },
+          {
+            :type   => "host",
+            :db     => "all",
+            :user   => "all",
+            :addr   => "::1/0",
+            :method => "md5"
+          }
+        ],
+        :password => {
+          :postgres => "password"
+        }
+      }
+    }
   end
 end

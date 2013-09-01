@@ -1,8 +1,0 @@
-SITE
-  remote: http://community.opscode.com/api/v1
-  specs:
-    apt (2.1.0)
-
-DEPENDENCIES
-  apt (>= 0)
-
